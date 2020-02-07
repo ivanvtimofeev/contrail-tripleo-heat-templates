@@ -4,6 +4,10 @@ description: >
   Contrail containerized Config Databse service
 
 parameters:
+  ContrailImageTag:
+    default: 'latest'
+    description: Contrail container image tag
+    type: string
   ContrailConfigDBMinDiskGB:
     description:  The min size for Contrail Config DB.
                   It is to check the size of the node.
@@ -190,50 +194,50 @@ outputs:
                 - - *contrail_env_file
         step_4:
           map_merge:
-            -  contrail_config_database_nodemgr:
-                  image: {get_attr: [ContrailBase, role_data, contrail_nodemgr_image_name]}
-                  net: host
-                  detach: true
-                  user: root
-                  restart: always
-                  volumes:
-                    list_concat:
-                      - {get_attr: [ContrailBase, role_data, contrail_base_volumes]}
-                      - - /var/run/docker.sock:/var/run/docker.sock
-                  environment:
-                    list_concat:
-                      - {get_attr: [ContrailBase, role_data, contrail_base_env]}
-                      - if:
-                        - contrail_configdb_min_disk_gb_unset
-                        - []
-                        - - list_join:
-                            - ''
-                            - - 'CONFIG_DATABASE_NODEMGR__DEFAULTS__minimum_diskGB='
-                              - {get_param: ContrailConfigDBMinDiskGB}
-                  env_file:
-                    list_concat:
-                      - {get_attr: [ContrailBase, role_data, contrail_base_env_file]}
-                      - - *contrail_env_file
-                contrail_config_database:
-                  image: &contrail_config_database_image {get_attr: [DockerContrailCassandraImageNormalize, contrail_image]}
-                  net: host
-                  privileged: false
-                  detach: true
-                  user: root
-                  restart: always
-                  volumes:
-                    list_concat:
-                      - {get_attr: [ContrailBase, role_data, contrail_base_volumes]}
+            - contrail_config_database_nodemgr:
+                image: {get_attr: [ContrailBase, role_data, contrail_nodemgr_image_name]}
+                net: host
+                detach: true
+                user: root
+                restart: always
+                volumes:
+                  list_concat:
+                    - {get_attr: [ContrailBase, role_data, contrail_base_volumes]}
+                    - - /var/run/docker.sock:/var/run/docker.sock
+                environment:
+                   list_concat:
+                    - {get_attr: [ContrailBase, role_data, contrail_base_env]}
+                    - if:
+                      - contrail_configdb_min_disk_gb_unset
+                      - []
                       - - list_join:
-                            - ':'
-                            - - {get_param: DockerContrailConfigDatabaseVolume}
-                              - '/var/lib/cassandra'
-                  environment:
-                    get_attr: [ContrailBase, role_data, contrail_base_env]
-                  env_file:
-                    list_concat:
-                      - {get_attr: [ContrailBase, role_data, contrail_base_env_file]}
-                      - - *contrail_env_file
+                          - ''
+                          - - 'CONFIG_DATABASE_NODEMGR__DEFAULTS__minimum_diskGB='
+                            - {get_param: ContrailConfigDBMinDiskGB}
+                env_file:
+                  list_concat:
+                    - {get_attr: [ContrailBase, role_data, contrail_base_env_file]}
+                    - - *contrail_env_file
+              contrail_config_database:
+                image: &contrail_config_database_image {get_attr: [DockerContrailCassandraImageNormalize, contrail_image]}
+                net: host
+                privileged: false
+                detach: true
+                user: root
+                restart: always
+                volumes:
+                  list_concat:
+                    - {get_attr: [ContrailBase, role_data, contrail_base_volumes]}
+                    - - list_join:
+                          - ':'
+                          - - {get_param: DockerContrailConfigDatabaseVolume}
+                            - '/var/lib/cassandra'
+                environment:
+                  get_attr: [ContrailBase, role_data, contrail_base_env]
+                env_file:
+                  list_concat:
+                    - {get_attr: [ContrailBase, role_data, contrail_base_env_file]}
+                    - - *contrail_env_file
             - if:
                 - is_more_than_2001_or_latest
                 - contrail_config_database_provisioner:

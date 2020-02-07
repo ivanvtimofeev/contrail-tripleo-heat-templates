@@ -4,6 +4,10 @@ description: >
   Contrail containerized Vrouter service
 
 parameters:
+  ContrailImageTag:
+    default: 'latest'
+    description: Contrail container image tag
+    type: string
   DockerContrailVrouterAgentImageName:
     description: image
     type: string

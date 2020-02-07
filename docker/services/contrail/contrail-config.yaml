@@ -4,6 +4,10 @@ description: >
   Contrail containerized Config Config service
 
 parameters:
+  ContrailImageTag:
+    default: 'latest'
+    description: Contrail container image tag
+    type: string
   DockerContrailConfigApiImageName:
     description: image
     type: string

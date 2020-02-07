@@ -8,6 +8,10 @@ parameters:
     description: image
     type: string
     default: "contrail-vrouter-agent"
+  ContrailImageTag:
+      default: 'latest'
+      description: Contrail container image tag
+      type: string
   DockerContrailNovaPluginImageName:
     description: image
     type: string
